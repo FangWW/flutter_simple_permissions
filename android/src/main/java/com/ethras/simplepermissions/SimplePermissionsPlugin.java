@@ -10,10 +10,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
+import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
@@ -85,9 +85,6 @@ public class SimplePermissionsPlugin implements MethodCallHandler, PluginRegistr
             case "RECORD_AUDIO":
                 res = Manifest.permission.RECORD_AUDIO;
                 break;
-            case "CALL_PHONE":
-                res = Manifest.permission.CALL_PHONE;
-                break;
             case "CAMERA":
                 res = Manifest.permission.CAMERA;
                 break;
@@ -96,9 +93,6 @@ public class SimplePermissionsPlugin implements MethodCallHandler, PluginRegistr
                 break;
             case "READ_EXTERNAL_STORAGE":
                 res = Manifest.permission.READ_EXTERNAL_STORAGE;
-                break;
-            case "READ_PHONE_STATE":
-                res = Manifest.permission.READ_PHONE_STATE;
                 break;
             case "ACCESS_FINE_LOCATION":
                 res = Manifest.permission.ACCESS_FINE_LOCATION;
@@ -114,12 +108,6 @@ public class SimplePermissionsPlugin implements MethodCallHandler, PluginRegistr
                 break;
             case "READ_CONTACTS":
                 res = Manifest.permission.READ_CONTACTS;
-                break;
-            case "SEND_SMS":
-                res = Manifest.permission.SEND_SMS;
-                break;
-            case "READ_SMS":
-                res = Manifest.permission.READ_SMS;
                 break;
             case "VIBRATE":
                 res = Manifest.permission.VIBRATE;
@@ -150,30 +138,13 @@ public class SimplePermissionsPlugin implements MethodCallHandler, PluginRegistr
     }
 
     @Override
-    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        int status = 0;
-        try {
-            String permission = permissions[0];
-            if (requestCode == 0 && grantResults.length > 0) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(registrar.activity(), permission)) {
-                    //denied
-                    status = 2;
-                } else {
-                    if (ActivityCompat.checkSelfPermission(registrar.context(), permission) == PackageManager.PERMISSION_GRANTED) {
-                        //allowed
-                        status = 3;
-                    } else {
-                        //set to never ask again
-                        Log.e("SimplePermission", "set to never ask again" + permission);
-                        status = 4;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public boolean onRequestPermissionsResult(int requestCode, String[] strings, int[] grantResults) {
+        boolean res = false;
+        if (requestCode == 0 && grantResults.length > 0) {
+            res = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+            Log.i("SimplePermission", "Requesting permission result : " + res);
+            result.success(res);
         }
-        Log.i("SimplePermission", "Requesting permission status : " + status);
-        result.success(status);
-        return status == 3;
+        return res;
     }
 }
