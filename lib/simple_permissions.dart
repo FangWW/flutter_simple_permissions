@@ -45,6 +45,15 @@ class SimplePermissions {
     return intToPermissionStatus(status);
   }
 
+
+  static Future<bool> insertImageMedia(
+      String path) async {
+   await _channel.invokeMethod(
+        "insertImageMedia", {"path": path});
+    return true;
+  }
+
+
   static PermissionStatus intToPermissionStatus(int status) {
     switch (status) {
       case 0:

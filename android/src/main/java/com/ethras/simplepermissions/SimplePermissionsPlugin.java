@@ -5,10 +5,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -63,6 +67,19 @@ public class SimplePermissionsPlugin implements MethodCallHandler, PluginRegistr
             case "openSettings":
                 openSettings();
                 result.success(true);
+                break;
+            case "insertImageMedia":
+                Activity activity = registrar.activity();
+                String path = call.argument("path");
+                File file = new File(path);
+                // 其次把文件插入到系统图库
+                try {
+                    MediaStore.Images.Media.insertImage(activity.getContentResolver(), file.getAbsolutePath(), file.getName(), null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                // 最后通知图库更新
+                activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(file.getAbsolutePath())));
                 break;
             default:
                 result.notImplemented();
