@@ -63,7 +63,10 @@ class _MyAppState extends State<MyApp> {
                 onPressed: getPermissionStatus,
                 child: new Text("Get permission status")),
             new RaisedButton(
-                onPressed: SimplePermissions.openSettings,
+                onPressed:(){
+                  SimplePermissions.insertImageMedia("/storage/emulated/0/Boohee/1538188456854.jpg");
+//                  SimplePermissions.openSettings;
+                },
                 child: new Text("Open settings"))
           ]),
         ),
